@@ -14,6 +14,7 @@ is_a(X, _Y) :- is_a(cat, X).
 caught(tom, bird).
 
 is_owned_by(tom, john).
+is_owned_by(_X, Y) :- isa(cat, Y).
 
 is_coloured(tom, ginger).
 
