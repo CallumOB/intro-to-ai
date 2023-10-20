@@ -12,16 +12,39 @@
 :- dynamic earnings/2.
 
 
+minsavings(Dependents, Amount) :- 
+	Amount is 5000 * Dependents.
+
+minincome(Dependents, Amount) :-
+	Amount is 15000 + (Dependents * 4000).
+
+% Based off of rules in Predicate Calculus examples
+invest_in(stocks) :- 
+	savings_account(adequate),
+	income(adequate).
+
+invest_in(combination) :- 
+	savings_account(adequate),
+	income(inadequate).
+
 invest_in(savings) :-
 	savings_account(inadequate).
 
+% Checks for sufficient savings 
 savings_account(adequate) :- 
-	amount_saved(X),
-	dependents(Y),
-	minsavings(Y, I),
-	X > I, !.
+	amount_saved(Amount),
+	dependents(Dependents),
+	minsavings(Dependents, MinSavings),
+	Amount > MinSavings, !.
+
+savings_account(inadequate) :-
+	amount_saved(Amount),
+	dependents(Dependents),
+	minsavings(Dependents, MinSavings),
+	Amount =< MinSavings, !.
 
 savings_account(inadequate).
+
 
 
 % rules 6 & 7
@@ -31,30 +54,44 @@ savings_account(inadequate).
 % Cut ! prevents this.
 
 income(adequate) :- 
-	earnings(X,steady),
-	dependents(Y),
-	minincome(Y, MI),
-	X > MI, !.
+	earnings(Amount, steady),
+	dependents(Dependents),
+	minincome(Dependents, MinIncome),
+	Amount >= MinIncome, !.
 
 income(inadequate).
 
-minsavings(Y, I) :- 
-	I is 5000 * Y.
-	
-minincome(D, I) :-
-	I is 15000 + D * 4000.
 
 getSavings :-
 	write('Input savings amount '),
 	read(S),
 	assert(amount_saved(S)).
 
+getDependents :- 
+	write('Input number of dependents '),
+	read(S),
+	assert(dependents(S)).
+
+getEarnings :- 
+	write('Input income '),
+	read(S),
+	assert(earnings(S, steady)).
+
+% amount_saved(150000).
+% dependents(2).
+% earnings(240000, steady).
+
 %  go is to run the whole program, makes it easier
-go :- getSavings,
-      income(),
-      invest_in(X),
-      write('Advice is to invest in ', X), !,
-      cleanInputs.
+go :- 
+	getSavings,
+	getDependents,
+	getEarnings,
+	savings_account(SA),
+	income(IA),
+	invest_in(II),
+	write('Advice is to invest in '),
+	write(II),
+	cleanInputs.
 
 % If the first attempt at go fails, Prolog will 
 % backtract and try this instead
@@ -64,4 +101,6 @@ go :-
 
 
 cleanInputs :-
-     retractall(amount_saved(_)).
+    retractall(amount_saved(_)),
+    retractall(dependents(_)),
+    retractall(earnings(_, _)).
