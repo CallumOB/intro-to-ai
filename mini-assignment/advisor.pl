@@ -97,9 +97,9 @@ go :-
 
 % If the first attempt at go fails, Prolog will 
 % backtract and try this instead
-% go :-
-%       write('Cannot currently advise you'),
-%       cleanInputs.
+go :-
+      write('Cannot currently advise you'),
+      cleanInputs.
 
 
 cleanInputs :-
