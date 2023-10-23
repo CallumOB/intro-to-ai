@@ -63,19 +63,21 @@ income(inadequate).
 
 
 getSavings :-
-	write('Input savings amount '),
+	write('Input savings amount -> '),
 	read(S),
 	assert(amount_saved(S)).
 
 getDependents :- 
-	write('Input number of dependents '),
+	write('Input number of dependents -> '),
 	read(S),
 	assert(dependents(S)).
 
-getEarnings :- 
-	write('Input income '),
-	read(S),
-	assert(earnings(S, steady)).
+getEarnings :-
+	write('Input your income -> '),
+	read(X),
+	write('Is your income steady? Enter "steady" or "unsteady" -> '),
+	read(Y),
+	assert(earnings(X, Y)).
 
 % amount_saved(150000).
 % dependents(2).
@@ -95,9 +97,9 @@ go :-
 
 % If the first attempt at go fails, Prolog will 
 % backtract and try this instead
-go :-
-      write('Cannot currently advise you'),
-      cleanInputs.
+% go :-
+%       write('Cannot currently advise you'),
+%       cleanInputs.
 
 
 cleanInputs :-
