@@ -11,12 +11,20 @@
 :- dynamic minsavings/2.
 :- dynamic earnings/2.
 
+% custom rules
+:- dynamic maxexpenditure/2.
+:- dynamic check_expenditure/1.
+
 
 minsavings(Dependents, Amount) :- 
 	Amount is 5000 * Dependents.
 
 minincome(Dependents, Amount) :-
 	Amount is 15000 + (Dependents * 4000).
+
+maxexpenditure(Income, Amount) :-
+	Monthly_Income is Income / 12,
+	Amount is Monthly_Income / 2.
 
 % Based off of rules in Predicate Calculus examples
 invest_in(stocks) :- 
@@ -61,6 +69,13 @@ income(adequate) :-
 
 income(inadequate).
 
+check_expenditure(reduce) :-
+	expenditure(Exp_Amount),
+	earnings(Amount, steady),
+	maxexpenditure(Amount, Max_Exp),
+	Exp_Amount > Max_Exp, !.
+
+check_expenditure(adequate).
 
 getSavings :-
 	write('Input savings amount -> '),
@@ -79,6 +94,11 @@ getEarnings :-
 	read(Y),
 	assert(earnings(X, Y)).
 
+getExpenditure :- 
+	write('Enter your monthly expenditure'),
+	read(S),
+	assert(expenditure(S)).
+
 % amount_saved(150000).
 % dependents(2).
 % earnings(240000, steady).
@@ -88,15 +108,19 @@ go :-
 	getSavings,
 	getDependents,
 	getEarnings,
+	getExpenditure,
 	savings_account(SA),
 	income(IA),
 	invest_in(II),
-	write('Advice is to invest in '),
-	write(II),
+	check_expenditure(Exp),
+	(Exp == reduce -> 
+		write('Advice is to reduce expenditure.');
+		write('Advice is to invest in '),
+		write(II)),
 	cleanInputs.
 
 % If the first attempt at go fails, Prolog will 
-% backtract and try this instead
+% backtrack and try this instead
 go :-
       write('Cannot currently advise you'),
       cleanInputs.
@@ -105,4 +129,5 @@ go :-
 cleanInputs :-
     retractall(amount_saved(_)),
     retractall(dependents(_)),
-    retractall(earnings(_, _)).
+    retractall(earnings(_, _)),
+	retractall(expenditure(_)).
